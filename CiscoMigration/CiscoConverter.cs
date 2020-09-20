@@ -4341,7 +4341,7 @@ namespace CiscoMigration
 
         #region Public Methods
 
-        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName)
+        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName,bool isLocalMgmt)
         {
             _ciscoParser = (CiscoParser)vendorParser;
             if (_ciscoParser == null)
@@ -4349,7 +4349,7 @@ namespace CiscoMigration
                 throw new InvalidDataException("Unexpected!!!");
             }
 
-            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName);
+            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, isLocalMgmt);
         }
 
         public override void Convert(bool convertNat)

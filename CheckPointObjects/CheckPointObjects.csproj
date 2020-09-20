@@ -45,7 +45,9 @@
   <ItemGroup>
     <Compile Include="CheckPointObjects.cs" />
     <Compile Include="CheckPointObjectsRepository.cs" />
+    <Compile Include="BashCLIScriptBuilder.cs" />
     <Compile Include="CLIScriptBuilder.cs" />
+    <Compile Include="PowerShellCLIScriptBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RuleBaseOptimizer.cs" />
   </ItemGroup>

@@ -556,7 +556,7 @@ namespace SmartMove
                     throw new InvalidDataException("Unexpected!!!");
             }
 
-            vendorConverter.Initialize(vendorParser, ConfigFilePath.Text, toolVersion, targetFolder, DomainName.Text);
+            vendorConverter.Initialize(vendorParser, ConfigFilePath.Text, toolVersion, targetFolder, DomainName.Text, false);
             vendorConverter.ConversionProgress += OnConversionProgress;
 
             try

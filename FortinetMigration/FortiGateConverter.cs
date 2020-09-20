@@ -83,14 +83,14 @@ namespace FortiGateMigration
         #endregion
 
         //Initialization method... stupid method because you must to initialize CheckPoint Objects Store in convert. (from Cisco converter)
-        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName)
+        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, bool isLocalMgmt)
         {
             _fortiGateParser = (FortiGateParser)vendorParser;
             if (_fortiGateParser == null)
             {
                 throw new InvalidDataException("Unexpected!!!");
             }
-            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName);
+            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, isLocalMgmt);
         }
 
         protected override bool AddCheckPointObject(CheckPointObject cpObject)

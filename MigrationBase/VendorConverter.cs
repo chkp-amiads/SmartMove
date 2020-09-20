@@ -108,7 +108,7 @@ namespace MigrationBase
         public string ErrorsHtmlFile { get; set; }
         public int ConversionIncidentCategoriesCount { get; set; }
         public int ConversionIncidentsCommandsCount { get; set; }
-
+        public CLIScriptBuilder CLIScriptBuilder { get; set; }
         #endregion
 
         #region Events
@@ -122,12 +122,12 @@ namespace MigrationBase
                 ConversionProgress(progress, title);
             }
         }
-        
+
         #endregion
 
         #region Methods
 
-        public virtual void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName)
+        public virtual void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, bool isLocalMgmt)
         {
             _vendorFilePath = vendorFilePath;
             _toolVersion = toolVersion;
@@ -137,14 +137,19 @@ namespace MigrationBase
             _vendorFileName = Path.GetFileNameWithoutExtension(vendorFilePath);
             _vendorFileName = !string.IsNullOrEmpty(_vendorFileName) ? Regex.Replace(_vendorFileName, @"\s+", "_") : "";
 
+            // get the relevant script builder
+            if(isLocalMgmt)
+                CLIScriptBuilder = BashCLIScriptBuilder.getInstance();
+            else
+                CLIScriptBuilder = PowerShellCLIScriptBuilder.getInstance();
             // policy package names
             _policyPackageName = _vendorFileName + "_policy";
             _policyPackageOptimizedName = _vendorFileName + "_policy_opt";
 
             // script files
-            ObjectsScriptFile = _targetFolder + "\\" + _vendorFileName + "_objects.sh";
-            PolicyScriptFile = _targetFolder + "\\" + _policyPackageName + ".sh";
-            PolicyOptimizedScriptFile = _targetFolder + "\\" + _policyPackageOptimizedName + ".sh";
+            ObjectsScriptFile = _targetFolder + "\\" + _vendorFileName + CLIScriptBuilder.GetObjectsScriptFilePostfix();
+            PolicyScriptFile = _targetFolder + "\\" + _policyPackageName + CLIScriptBuilder.GetPolicyScriptFilePostfix();
+            PolicyOptimizedScriptFile = _targetFolder + "\\" + _policyPackageOptimizedName + CLIScriptBuilder.GetPolicyOptimizedScriptFilePostfix();
 
             // HTML files
             VendorHtmlFile = _targetFolder + "\\" + _vendorFileName + ".html";
@@ -154,6 +159,7 @@ namespace MigrationBase
             PolicyHtmlFile = _targetFolder + "\\" + _policyPackageName + ".html";
             PolicyOptimizedHtmlFile = _targetFolder + "\\" + _policyPackageOptimizedName + ".html";
             NatHtmlFile = _targetFolder + "\\" + _vendorFileName + "_NAT.html";
+
         }
 
         public void ChangeTargetFolder(string targetFolderNew, string targetFileNameNew)
@@ -166,9 +172,9 @@ namespace MigrationBase
             _policyPackageOptimizedName = _vendorFileName + "_policy_opt";
 
             // script files
-            ObjectsScriptFile = _targetFolder + "\\" + _vendorFileName + "_objects.sh";
-            PolicyScriptFile = _targetFolder + "\\" + _policyPackageName + ".sh";
-            PolicyOptimizedScriptFile = _targetFolder + "\\" + _policyPackageOptimizedName + ".sh";
+            ObjectsScriptFile = _targetFolder + "\\" + _vendorFileName + CLIScriptBuilder.GetObjectsScriptFilePostfix(); ;
+            PolicyScriptFile = _targetFolder + "\\" + _policyPackageName + CLIScriptBuilder.GetPolicyScriptFilePostfix();
+            PolicyOptimizedScriptFile = _targetFolder + "\\" + _policyPackageOptimizedName + CLIScriptBuilder.GetPolicyOptimizedScriptFilePostfix();
 
             // HTML files
             VendorHtmlFile = _targetFolder + "\\" + _vendorFileName + ".html";
@@ -1309,7 +1315,7 @@ namespace MigrationBase
             {
                 ++packageNumber;
 
-                string filename = _targetFolder + "\\" + package.Name + ".sh";
+                string filename = _targetFolder + "\\" + package.Name + CLIScriptBuilder.GetPolicyScriptFilePostfix();
                 string errorsReportFile = (packageNumber == 1) ? "failed_package.txt" : "failed_package_opt.txt";
                 string diagnosticsTarget = (packageNumber == 1) ? "SmartMove_Create_Policy" : "SmartMove_Create_Optimized_Policy";
 
