@@ -55,7 +55,8 @@ namespace SmartMove
         #region Private Members
 
         private readonly SupportedVendors _supportedVendors = new SupportedVendors();
-        
+        private readonly SupportedOutputScripts _supportedOutputScripts = new SupportedOutputScripts();
+
         #endregion
 
         #region Construction
@@ -63,7 +64,7 @@ namespace SmartMove
         public MainWindow()
         {
             _supportedVendors.SelectedVendor = Vendor.CiscoASA;   // this is the default
-
+            _supportedOutputScripts.SelectedOutputScript = OutputScript.BashCLI; // this is the default
             InitializeComponent();
             ShowDisclaimer();
             LoadContactInfo();
@@ -81,7 +82,17 @@ namespace SmartMove
             get { return _supportedVendors.SelectedVendor; }
             set { _supportedVendors.SelectedVendor = value; }
         }
-        
+
+        #endregion
+
+        #region SelectedOutputScript
+
+        public OutputScript SelectedOutputScript
+        {
+            get { return _supportedOutputScripts.SelectedOutputScript; }
+            set { _supportedOutputScripts.SelectedOutputScript = value; }
+        }
+
         #endregion
 
         #region ConfigurationFileLabel
@@ -263,10 +274,46 @@ namespace SmartMove
             }
         }
 
-        private void VendorSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Domain controls state is affeced by 2 combos - Vendor and Output Script
+        private void SetDomainControlsState()
         {
             DomainNameTB.Visibility = Visibility.Visible;
             DomainName.Visibility = Visibility.Visible;
+
+            switch (_supportedVendors.SelectedVendor)
+            {
+                case Vendor.CiscoASA:
+                case Vendor.JuniperJunosOS:
+                case Vendor.JuniperScreenOS:
+                    switch (_supportedOutputScripts.SelectedOutputScript)
+                    {
+                        case OutputScript.BashCLI:
+                            DomainNameTB.Visibility = Visibility.Visible;
+                            DomainName.Visibility = Visibility.Visible;
+                            break;
+                        case OutputScript.PowerShellCLI:
+                            DomainNameTB.Visibility = Visibility.Collapsed;
+                            DomainName.Visibility = Visibility.Collapsed;
+                            break;
+                    }
+                    break;
+                case Vendor.FortiGate:
+                case Vendor.PaloAlto:
+                    DomainNameTB.Visibility = Visibility.Collapsed;
+                    DomainName.Visibility = Visibility.Collapsed;
+                    break;
+
+            }
+   
+
+        }
+
+        private void VendorSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            SetDomainControlsState();
+            //DomainNameTB.Visibility = Visibility.Visible;
+            //DomainName.Visibility = Visibility.Visible;
 
             ConvertUserConf.Visibility = Visibility.Collapsed;
             LDAPAccountUnitTB.Visibility = Visibility.Collapsed;
@@ -287,15 +334,15 @@ namespace SmartMove
                     break;
                 case Vendor.FortiGate:
                     ConfigurationFileLabel = SupportedVendors.FortiGateConfigurationFileLabel;
-                    DomainNameTB.Visibility = Visibility.Collapsed;
-                    DomainName.Visibility = Visibility.Collapsed;
+              //      DomainNameTB.Visibility = Visibility.Collapsed;
+              //      DomainName.Visibility = Visibility.Collapsed;
                     SkipUnusedObjects.Visibility = Visibility.Visible;
                     ConvertUserConf.Visibility = Visibility.Visible;
                     break;
                 case Vendor.PaloAlto:
                     ConfigurationFileLabel = SupportedVendors.PaloAltoConfigurationFileLabel;
-                    DomainNameTB.Visibility = Visibility.Collapsed;
-                    DomainName.Visibility = Visibility.Collapsed;
+                //    DomainNameTB.Visibility = Visibility.Collapsed;
+                 //   DomainName.Visibility = Visibility.Collapsed;
                     SkipUnusedObjects.Visibility = Visibility.Visible;
                     ConvertUserConf.Visibility = Visibility.Visible;
                     break;
@@ -304,6 +351,27 @@ namespace SmartMove
             ConfigFilePath.Text = SourceFolder;
             TargetFolderPath.Text = TargetFolder;
             OutputPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void OutputScriptSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SetDomainControlsState();
+
+            /*
+            switch (_supportedOutputScripts.SelectedOutputScript)
+            {
+                case OutputScript.BashCLI:
+                    DomainNameTB.Visibility = Visibility.Visible;
+                    DomainName.Visibility = Visibility.Visible;
+
+                    break;
+                case OutputScript.PowerShellCLI:
+                    DomainNameTB.Visibility = Visibility.Collapsed;
+                    DomainName.Visibility = Visibility.Collapsed;
+
+                    break;
+            }
+            */
         }
 
         private void BrowseConfigFile_OnClick(object sender, RoutedEventArgs e)
@@ -556,7 +624,7 @@ namespace SmartMove
                     throw new InvalidDataException("Unexpected!!!");
             }
 
-            vendorConverter.Initialize(vendorParser, ConfigFilePath.Text, toolVersion, targetFolder, DomainName.Text, false);
+            vendorConverter.Initialize(vendorParser, ConfigFilePath.Text, toolVersion, targetFolder, DomainName.Text, _supportedOutputScripts.SelectedOutputScript);
             vendorConverter.ConversionProgress += OnConversionProgress;
 
             try
@@ -715,6 +783,17 @@ namespace SmartMove
             ObjectsScriptLink.Tag = vendorConverter.ObjectsScriptFile;
             RulebaseScriptLink.Tag = vendorConverter.PolicyScriptFile;
             RulebaseOptimizedScriptLink.Tag = vendorConverter.PolicyOptimizedScriptFile;
+
+            switch (_supportedOutputScripts.SelectedOutputScript)
+            {
+                case OutputScript.BashCLI:
+                    BashScriptsPanel.Visibility = Visibility.Visible;
+                    break;
+                case OutputScript.PowerShellCLI:
+                    BashScriptsPanel.Visibility = Visibility.Collapsed;
+                    break;
+
+            }
         }
 
         private void ShowDisclaimer()

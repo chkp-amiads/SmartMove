@@ -5,6 +5,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:SmartMove"
         xmlns:vendors="clr-namespace:MigrationBase;assembly=MigrationBase"
+        xmlns:outputScripts="clr-namespace:MigrationBase;assembly=MigrationBase"
         Title="SmartMove"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
@@ -25,8 +26,13 @@
                     <x:Type TypeName="vendors:Vendor"/>
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
+            <ObjectDataProvider x:Key="OutputScriptsEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="outputScripts:OutputScript"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
         </ResourceDictionary>
-    </Window.Resources>
+       </Window.Resources>
 
     <!-- Remove the default windows border and header-->
     <WindowChrome.WindowChrome>
@@ -189,23 +195,30 @@
                                 <Button x:Name="BrowseTargetFolder" Grid.Column="1" Style="{StaticResource BrowseButtonControlStyle}" Margin="10,0,0,0"
                                         Click="BrowseTargetFolder_OnClick"/>
                             </Grid>
-                            <TextBlock x:Name="DomainNameTB" Grid.Row="6" Text="Import to a domain (optional):" Margin="0,15,0,0" Style="{StaticResource NormalTextBloclStyle}"/>
-                            <TextBox x:Name="DomainName" Grid.Row="7" Margin="0,6,0,0" Style="{StaticResource TextBoxWithWatermarkControlStyle}"
+                            <TextBlock Grid.Row="6" Text="Output script:" Margin="0,15,0,0" Style="{StaticResource NormalTextBloclStyle}"/>
+                            <ComboBox x:Name="LocalMgmt" Grid.Row="7" Margin="0,6,0,0"
+                                      Style="{StaticResource ComboBoxFlatStyle}"
+                                      Width="300" HorizontalAlignment="Left"
+                                      ItemsSource="{Binding Source={StaticResource OutputScriptsEnum}}"
+                                      SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=SelectedOutputScript}"
+                                      SelectionChanged="OutputScriptSelector_OnSelectionChanged"/>
+                            <TextBlock x:Name="DomainNameTB" Grid.Row="8" Text="Import to a domain (optional):" Margin="0,15,0,0" Style="{StaticResource NormalTextBloclStyle}"/>
+                            <TextBox x:Name="DomainName" Grid.Row="9" Margin="0,6,0,0" Style="{StaticResource TextBoxWithWatermarkControlStyle}"
                                      Tag="domain name"
                                      Width="300" HorizontalAlignment="Left">
                                 <i:Interaction.Behaviors>
                                     <local:TripleClickSelectsAllTextBehavior/>
                                 </i:Interaction.Behaviors>
                             </TextBox>
-                            <CheckBox x:Name="ConvertNAT" Grid.Row="8" Content="Convert NAT configuration"
+                            <CheckBox x:Name="ConvertNAT" Grid.Row="10" Content="Convert NAT configuration"
                                       IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ConvertNATConfiguration, Mode=TwoWay}"
                                       Margin="0,15,0,0" Background="Transparent" Focusable="False"/>
-                            <CheckBox x:Name="ConvertUserConf" Grid.Row="9" Content="Convert user configuration"
+                            <CheckBox x:Name="ConvertUserConf" Grid.Row="11" Content="Convert user configuration"
                                       IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ConvertUserConfiguration, Mode=TwoWay}"
                                       Margin="0,15,0,0" Background="Transparent" Focusable="False" Checked="ConvertUserConf_Checked" Unchecked="ConvertUserConf_Checked"/>
-                            <TextBlock x:Name="LDAPAccountUnitTB" Grid.Row="10" Text="LDAP Account Unit (used only for user configuration):"
+                            <TextBlock x:Name="LDAPAccountUnitTB" Grid.Row="12" Text="LDAP Account Unit (used only for user configuration):"
                                        Margin="30,10,0,0" Style="{StaticResource NormalTextBloclStyle}"/>
-                            <Grid Grid.Row="11" Margin="30,5,0,0" Background="Transparent" x:Name="LDAPAccountUnitBlock">
+                            <Grid Grid.Row="13" Margin="30,5,0,0" Background="Transparent" x:Name="LDAPAccountUnitBlock">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -219,10 +232,10 @@
                                 </TextBox>
                                 <TextBlock Grid.Column="1" Text="*" FontSize="20" FontWeight="Bold" Foreground="#FFFF1700" Margin="5,0,0,0"/>
                             </Grid>
-                            <CheckBox x:Name="SkipUnusedObjects" Grid.Row="12" Content="Do not import unused objects"
+                            <CheckBox x:Name="SkipUnusedObjects" Grid.Row="14" Content="Do not import unused objects"
                                       IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=SkipUnusedObjectsConversion, Mode=TwoWay}"
                                       Margin="0,15,0,0" Background="Transparent" Focusable="False"/>
-                            <Grid Grid.Row="13" Margin="0,15,0,0" Background="Transparent" Focusable="False">
+                            <Grid Grid.Row="15" Margin="0,15,0,0" Background="Transparent" Focusable="False">
                                 <Button x:Name="Go" Style="{StaticResource GoButtonControlStyle}" HorizontalAlignment="Right"
                                         Click="Go_OnClick"/>
                             </Grid>

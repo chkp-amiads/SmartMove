@@ -39,7 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OutputScriptDescriptionConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SupportedOutputScripts.cs" />
     <Compile Include="SupportedVendors.cs" />
     <Compile Include="VendorConverter.cs" />
     <Compile Include="VendorDescriptionConverter.cs" />

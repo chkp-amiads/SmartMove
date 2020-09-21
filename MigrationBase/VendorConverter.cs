@@ -127,7 +127,28 @@ namespace MigrationBase
 
         #region Methods
 
-        public virtual void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, bool isLocalMgmt)
+        private CLIScriptBuilder ScriptBuilderFactory(OutputScript outputScript)
+        {
+            CLIScriptBuilder scriptBuilder = null;
+
+            switch (outputScript)
+            {
+                case OutputScript.BashCLI:
+                    scriptBuilder = BashCLIScriptBuilder.getInstance();
+                    break;
+                case OutputScript.PowerShellCLI:
+                    scriptBuilder = PowerShellCLIScriptBuilder.getInstance();
+                    break;
+
+                default:
+                    scriptBuilder = BashCLIScriptBuilder.getInstance();
+                    break;
+
+            }
+
+            return scriptBuilder;
+        }
+        public virtual void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, OutputScript outputScript)
         {
             _vendorFilePath = vendorFilePath;
             _toolVersion = toolVersion;
@@ -138,10 +159,8 @@ namespace MigrationBase
             _vendorFileName = !string.IsNullOrEmpty(_vendorFileName) ? Regex.Replace(_vendorFileName, @"\s+", "_") : "";
 
             // get the relevant script builder
-            if(isLocalMgmt)
-                CLIScriptBuilder = BashCLIScriptBuilder.getInstance();
-            else
-                CLIScriptBuilder = PowerShellCLIScriptBuilder.getInstance();
+            CLIScriptBuilder = ScriptBuilderFactory(outputScript);
+
             // policy package names
             _policyPackageName = _vendorFileName + "_policy";
             _policyPackageOptimizedName = _vendorFileName + "_policy_opt";

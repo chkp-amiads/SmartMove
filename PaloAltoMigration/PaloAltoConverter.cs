@@ -731,14 +731,14 @@ namespace PaloAltoMigration
 
         #region Converter
 
-        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, bool isLocalMgmt)
+        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, OutputScript outputScript)
         {
             _paParser = (PaloAltoParser)vendorParser;
             if (_paParser == null)
             {
                 throw new InvalidDataException("Unexpected!!!");
             }
-            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, isLocalMgmt);
+            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, outputScript);
         }
 
         protected override bool AddCheckPointObject(CheckPointObject cpObject)

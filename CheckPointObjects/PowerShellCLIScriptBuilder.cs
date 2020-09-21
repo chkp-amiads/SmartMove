@@ -112,7 +112,11 @@ namespace CheckPointObjects
               .Append(Environment.NewLine)
               .Append("$name = Read-Host 'Enter username'")
               .Append(Environment.NewLine)
-              .Append("$pass = Read-Host 'Enter password'")
+              .Append("$securePass = Read-Host 'Enter password' -AsSecureString")
+              .Append(Environment.NewLine)
+              .Append("$bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePass)")
+              .Append(Environment.NewLine)
+              .Append("$pass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)")
               .Append(Environment.NewLine);
 
             sb.Append("Write-Host 'Logging in...'")
@@ -120,6 +124,7 @@ namespace CheckPointObjects
               .Append("if ([System.IO.File]::Exists('").Append(errorsReportFileName).Append("'))")
               .Append(Environment.NewLine)
               .Append("{")
+              .Append(Environment.NewLine)
               .Append("Remove-Item ").Append(errorsReportFileName)
               .Append(Environment.NewLine)
               .Append("}")
@@ -131,17 +136,12 @@ namespace CheckPointObjects
               .Append(Environment.NewLine)
               .Append("$cmd = '.\\mgmt_cli.exe login user ' + $name + ' password ' + $pass + ' -m ' + $fullNameServiceId + ' --context ' + $sharedSecret + '/web_api -v 1.1 -f json'")
               .Append(Environment.NewLine)
-              .Append("Write-Host 'loing command: ' + $cmd")
-              .Append(Environment.NewLine)
               .Append("$response = Invoke-Expression $cmd | ConvertFrom-Json")
-              .Append(Environment.NewLine)
-              .Append("Write-Host 'respons: ' $response")
               .Append(Environment.NewLine)
               .Append("$sid = $response.sid")
               .Append(Environment.NewLine)
-              .Append("Write-Host 'sid: ' $sid")
-              .Append(Environment.NewLine)
               .Append("} catch{")
+              .Append(Environment.NewLine)
               .Append("Write-Host 'Login failed'")
               .Append(Environment.NewLine)
               .Append("exit 1")
@@ -205,9 +205,10 @@ namespace CheckPointObjects
 
             var sb = new StringBuilder();
 
-            sb.Append("$cmd='.\\mgmt_cli.exe ").Append(command + "_" + vendorName).Append(" --session-id ' + $sid")  
+            sb.Append("$cmd='.\\mgmt_cli.exe ").Append(command + "_" + vendorName).Append(" --session-id ' + $sid + ' -m ' + $fullNameServiceId + ' --context ' + $sharedSecret + '/web_api'")  
             .Append(Environment.NewLine)
-              .Append("run_command $cmd");
+              .Append("Invoke-Expression $cmd > null");
+
 
 
             return sb.ToString();
@@ -216,8 +217,7 @@ namespace CheckPointObjects
         public string GenerateRuleInstructionScript(string instruction)
         {
             var sb = new StringBuilder();
-            sb.Append("Write-Host -n $'\\r").Append(instruction).Append(" '"); // TODO remove bash signs here
-
+            sb.Append("Write-Host `r").Append(instruction).Append(" -NoNewLine"); 
             return sb.ToString();
         }
 

@@ -3500,7 +3500,7 @@ namespace JuniperMigration
 
         #region Public Methods
 
-        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, bool isLocalMgmt)
+        public override void Initialize(VendorParser vendorParser, string vendorFilePath, string toolVersion, string targetFolder, string domainName, OutputScript outputScript)
         {
             _juniperParser = (JuniperParser)vendorParser;
             if (_juniperParser == null)
@@ -3508,7 +3508,7 @@ namespace JuniperMigration
                 throw new InvalidDataException("Unexpected!!!");
             }
 
-            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, isLocalMgmt);
+            base.Initialize(vendorParser, vendorFilePath, toolVersion, targetFolder, domainName, outputScript);
         }
 
         public override void Convert(bool convertNat)
